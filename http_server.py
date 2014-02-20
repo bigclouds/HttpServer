@@ -1,6 +1,6 @@
 from email.utils import formatdate
 from mimetypes import guess_type
-from socket import socket
+import socket
 from os.path import isfile, isdir
 from os import listdir
 
