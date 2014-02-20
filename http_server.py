@@ -33,8 +33,9 @@ def http_server():
             except Error405:
                 response = build_response(resource, mimetype, '405')
 
-            except:
+            except BaseException as e:
                 response = build_response(resource, mimetype, '500')
+                print(e)
 
             else:
                 response = build_response(resource, mimetype)
@@ -102,9 +103,9 @@ def map_uri(uri):
 def build_response(message, mimetype, code="OK 200"):
     """Build a response with the specified code and content."""
 
-    if not isinstance(bytes):
+    if not isinstance(message, bytes):
         message = message.encode('utf-8')
-    bytelen = len(bytes)
+    bytelen = len(message)
     header_list = []
     status_line = 'HTTP/1.1 ' + code + '\r\n'
     header_list.append(status_line)
@@ -117,8 +118,11 @@ def build_response(message, mimetype, code="OK 200"):
     content_len = 'Content-Length: ' + str(bytelen) + '\r\n'
     header_list.append(content_len)
     header_list.append('\r\n')
-    header = '\r\n'.join(header_list)
-    return (header, message)
+    header_list.append(message)
+    #header = '\r\n'.join(header_list)
+    total = ''.join(header_list)
+    print total
+    return total
 
 
 class Error404(BaseException):
@@ -134,3 +138,7 @@ class Error405(BaseException):
 class ParseException(Exception):
     """An empty class to pass useful exceptions."""
     pass
+
+
+if __name__ == '__main__':
+    http_server()
