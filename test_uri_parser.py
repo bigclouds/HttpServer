@@ -1,5 +1,6 @@
 import unittest
 from uri_parser import map_uri, Error404
+from os import listdir
 
 
 class TestMapUri(unittest.TestCase):
@@ -18,13 +19,16 @@ class TestMapUri(unittest.TestCase):
     def test_directory_requested(self):
         """Map a URI containing a request for a directory."""
         message, mimetype = map_uri(self.directory_requested)
-       # with open(name)
+        contents = listdir('webroot' + self.directory_requested)
+        content_string = u'\n'.join(contents).encode('utf-8')
+        self.assertEqual(message, content_string)
+        self.assertEqual(mimetype, 'text/plain')
 
     def test_image_file_requested(self):
         """Map a URI containing a request for an image file."""
         message, mimetype = map_uri(self.image_requested)
 
-        with open('webroot' + self.image_requested, 'br') as infile:
+        with open('webroot' + self.image_requested, 'rb') as infile:
             expected = infile.readlines()
 
         self.assertEqual(message, expected)
@@ -34,7 +38,7 @@ class TestMapUri(unittest.TestCase):
         """Map a URI containing a request for a text file."""
         message, mimetype = map_uri(self.text_requested)
 
-        with open('webroot' + self.text_requested, 'br') as infile:
+        with open('webroot' + self.text_requested, 'rb') as infile:
             expected = infile.readlines()
 
         self.assertEqual(message, expected)
@@ -44,7 +48,7 @@ class TestMapUri(unittest.TestCase):
         """Map a URI containing a request for a resource that doesn't
         exist.
         """
-        self.assertRaises(Error404, map_uri(self.nonexistant_requested))
+        self.assertRaises(Error404, map_uri, self.nonexistant_requested)
 
 
 if __name__ == '__main__':
