@@ -24,9 +24,6 @@ class TestReceiveMessage(unittest.TestCase):
             conn, addr = server.accept()
 
         else:
-            #Sleep to allow the parent time to set up the
-            #server. Then send a message and die quietly.
-            sleep(0.25)
             self.dummy_client(self.empty_message)
             _exit(0)
 
@@ -44,9 +41,6 @@ class TestReceiveMessage(unittest.TestCase):
             conn, addr = server.accept()
 
         else:
-            #Sleep to allow the parent time to set up the
-            #server. Then send a message and die quietly.
-            sleep(0.25)
             self.dummy_client(self.small_message)
             _exit(0)
 
@@ -64,9 +58,6 @@ class TestReceiveMessage(unittest.TestCase):
             conn, addr = server.accept()
 
         else:
-            #Sleep to allow the parent time to set up the
-            #server. Then send a message and die quietly.
-            sleep(0.25)
             self.dummy_client(self.large_message)
             _exit(0)
 
@@ -84,9 +75,6 @@ class TestReceiveMessage(unittest.TestCase):
             conn, addr = server.accept()
 
         else:
-            #Sleep to allow the parent time to set up the
-            #server. Then send a message and die quietly.
-            sleep(0.25)
             self.dummy_client(self.exact_message)
             _exit(0)
 

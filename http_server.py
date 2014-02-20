@@ -24,7 +24,7 @@ def http_server():
             try:
                 conn, addr = server_socket.accept()
                 msg = receive_message(conn)
-                uri = parse_request_header(msg)
+                uri = parse_request(msg)
                 resource, mimetype = map_uri(uri)
 
             except Error404:
@@ -67,9 +67,14 @@ def receive_message(conn, buffsize=4096):
     return msg
 
 
-def parse_request_header(header):
-    """Parse the command line from the HTTP header."""
-    pass
+def parse_request(request):
+    first_rn = request.find('\r\n')
+    first_line = request[:first_rn]
+    if first_line.split()[0] == 'GET':
+        uri = first_line.split()[1]
+        return uri
+    else:
+        raise ParseException("405: Method not allowed. Only GET is allowed.")
 
 
 def map_uri(uri):
@@ -106,4 +111,9 @@ class Error404(BaseException):
 
 class Error405(BaseException):
     """Exception raised when a method other than GET is requested."""
+    pass
+
+
+class ParseException(Exception):
+    """An empty class to pass useful exceptions."""
     pass
