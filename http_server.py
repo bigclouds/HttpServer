@@ -99,9 +99,26 @@ def map_uri(uri):
     raise Error404
 
 
-def build_response(message, mimetype, code='200'):
+def build_response(message, mimetype, code="OK 200"):
     """Build a response with the specified code and content."""
-    pass
+
+    if not isinstance(bytes):
+        message = message.encode('utf-8')
+    bytelen = len(bytes)
+    header_list = []
+    status_line = 'HTTP/1.1 ' + code + '\r\n'
+    header_list.append(status_line)
+    timestamp = 'Date: ' + formatdate(usegmt=True) + '\r\n'
+    header_list.append(timestamp)
+    server_line = 'Server: Team Python\r\n'
+    header_list.append(server_line)
+    content_type = 'Content-Type: ' + mimetype + '; char=UTF-8\r\n'
+    header_list.append(content_type)
+    content_len = 'Content-Length: ' + str(bytelen) + '\r\n'
+    header_list.append(content_len)
+    header_list.append('\r\n')
+    header = '\r\n'.join(header_list)
+    return (header, message)
 
 
 class Error404(BaseException):
