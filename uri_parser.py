@@ -24,7 +24,7 @@ def map_uri(uri):
 
     if isdir(filepath):
         contents = listdir(filepath)
-        return (u'\n'.join(contents).encode('utf-8'), 'text/plain')
+        return ('\n'.join(contents), 'text/plain')
 
     #If what we received was not a file or a directory, raise an Error404.
     raise Error404

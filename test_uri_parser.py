@@ -20,7 +20,7 @@ class TestMapUri(unittest.TestCase):
         """Map a URI containing a request for a directory."""
         message, mimetype = map_uri(self.directory_requested)
         contents = listdir('webroot' + self.directory_requested)
-        content_string = u'\n'.join(contents).encode('utf-8')
+        content_string = '\n'.join(contents)
         self.assertEqual(message, content_string)
         self.assertEqual(mimetype, 'text/plain')
 
