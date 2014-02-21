@@ -1,8 +1,7 @@
 import unittest
 import socket
-from time import sleep
 from os import listdir, fork, _exit
-from http_server import Error404, Error405, map_uri, receive_message
+from http_server import Error404, map_uri, receive_message
 
 
 class TestReceiveMessage(unittest.TestCase):
@@ -27,7 +26,7 @@ class TestReceiveMessage(unittest.TestCase):
             self.dummy_client(self.empty_message)
             _exit(0)
 
-        msg = receive_message(conn)
+        msg = receive_message(conn, 32)
         conn.shutdown(socket.SHUT_RDWR)
         conn.close()
         self.assertEqual(msg, self.empty_message)
@@ -44,7 +43,7 @@ class TestReceiveMessage(unittest.TestCase):
             self.dummy_client(self.small_message)
             _exit(0)
 
-        msg = receive_message(conn)
+        msg = receive_message(conn, 32)
         conn.shutdown(socket.SHUT_RDWR)
         conn.close()
         self.assertEqual(msg, self.small_message)
@@ -61,7 +60,7 @@ class TestReceiveMessage(unittest.TestCase):
             self.dummy_client(self.large_message)
             _exit(0)
 
-        msg = receive_message(conn)
+        msg = receive_message(conn, 32)
         conn.shutdown(socket.SHUT_RDWR)
         conn.close()
         self.assertEqual(msg, self.large_message)
@@ -78,7 +77,7 @@ class TestReceiveMessage(unittest.TestCase):
             self.dummy_client(self.exact_message)
             _exit(0)
 
-        msg = receive_message(conn)
+        msg = receive_message(conn, 32)
         conn.shutdown(socket.SHUT_RDWR)
         conn.close()
         self.assertEqual(msg, self.exact_message)
@@ -107,14 +106,6 @@ class TestReceiveMessage(unittest.TestCase):
         client_socket.close()
 
 
-class TestParseRequestHeader(unittest.TestCase):
-    """Test the parse_request_header function, which gets the command
-    portion of the message header and parses for the request method and
-    resource request.
-    """
-    pass
-
-
 class TestMapUri(unittest.TestCase):
     """Test the uri mapping function. It should obtain a listing of the
     server's filesystem, check whether the file specified exists, and
@@ -141,7 +132,7 @@ class TestMapUri(unittest.TestCase):
         message, mimetype = map_uri(self.image_requested)
 
         with open('webroot' + self.image_requested, 'rb') as infile:
-            expected = infile.readlines()
+            expected = infile.read()
 
         self.assertEqual(message, expected)
         self.assertEqual(mimetype, 'image/png')
@@ -151,7 +142,7 @@ class TestMapUri(unittest.TestCase):
         message, mimetype = map_uri(self.text_requested)
 
         with open('webroot' + self.text_requested, 'rb') as infile:
-            expected = infile.readlines()
+            expected = infile.read()
 
         self.assertEqual(message, expected)
         self.assertEqual(mimetype, 'text/plain')
@@ -161,13 +152,6 @@ class TestMapUri(unittest.TestCase):
         exist.
         """
         self.assertRaises(Error404, map_uri, self.nonexistant_requested)
-
-
-class TestBuildResponse(unittest.TestCase):
-    """Test build_response by attempting to build a proper message given
-    the correct resources.
-    """
-    pass
 
 
 if __name__ == '__main__':

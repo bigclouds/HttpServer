@@ -27,14 +27,12 @@ def http_server():
                 uri = parse_request(msg)
                 resource, mimetype = map_uri(uri)
 
-            except Error404:
-                response = build_response(resource, mimetype, '404')
-
-            except Error405:
-                response = build_response(resource, mimetype, '405')
+            except (Error404, ParseException) as e:
+                response = build_response(e.message, 'text/plain', e.code)
 
             except:
-                response = build_response(resource, mimetype, '500')
+                response = build_response("500 Internal Server Error",
+                    'text/plain', '500')
 
             else:
                 response = build_response(resource, mimetype)
@@ -45,8 +43,7 @@ def http_server():
                 conn.close()
 
     finally:
-        #Make sure the socket is closed when we can't continue.
-        print("Closing the socket.")
+        #Make sure the socket is closed if we can't continue.
         server_socket.close()
 
 
@@ -99,7 +96,7 @@ def map_uri(uri):
         return ('\n'.join(contents), 'text/plain')
 
     #If what we received was not a file or a directory, raise an Error404.
-    raise Error404
+    raise Error404("404: File not found.")
 
 
 def build_response(message, mimetype, code="OK 200"):
@@ -122,17 +119,12 @@ def build_response(message, mimetype, code="OK 200"):
 
 class Error404(BaseException):
     """Exception raised when a file specified by a URI does not exist."""
-    pass
-
-
-class Error405(BaseException):
-    """Exception raised when a method other than GET is requested."""
-    pass
+    code = '404'
 
 
 class ParseException(Exception):
     """An empty class to pass useful exceptions."""
-    pass
+    code = '405'
 
 
 if __name__ == '__main__':
