@@ -33,16 +33,15 @@ def http_server():
             except Error405:
                 response = build_response(resource, mimetype, '405')
 
-            except BaseException as e:
+            except:
                 response = build_response(resource, mimetype, '500')
-                print(e)
 
             else:
                 response = build_response(resource, mimetype)
 
             finally:
                 conn.sendall(response)
-                conn.shutdown(socket.SHUT_WR)
+               # conn.shutdown(socket.SHUT_WR)
                 conn.close()
 
     finally:
@@ -88,7 +87,7 @@ def map_uri(uri):
 
     if isfile(filepath):
         with open(filepath, 'rb') as infile:
-            message = infile.readlines()
+            message = infile.read()
 
         return (message, guess_type(filepath)[0])
 
@@ -103,26 +102,19 @@ def map_uri(uri):
 def build_response(message, mimetype, code="OK 200"):
     """Build a response with the specified code and content."""
 
+    # Headers should all be ascii
     if not isinstance(message, bytes):
         message = message.encode('utf-8')
     bytelen = len(message)
-    header_list = []
-    status_line = 'HTTP/1.1 ' + code + '\r\n'
-    header_list.append(status_line)
-    timestamp = 'Date: ' + formatdate(usegmt=True) + '\r\n'
-    header_list.append(timestamp)
-    server_line = 'Server: Team Python\r\n'
-    header_list.append(server_line)
-    content_type = 'Content-Type: ' + mimetype + '; char=UTF-8\r\n'
-    header_list.append(content_type)
-    content_len = 'Content-Length: ' + str(bytelen) + '\r\n'
-    header_list.append(content_len)
-    header_list.append('\r\n')
-    header_list.append(message)
-    #header = '\r\n'.join(header_list)
-    total = ''.join(header_list)
-    print total
-    return total
+    resp_list = []
+    resp_list.append('HTTP/1.1 %s' % code)
+    resp_list.append('Date: %s' % formatdate(usegmt=True))
+    resp_list.append('Server: Team Python')
+    resp_list.append('Content-Type: %s; char=UTF-8' % mimetype)
+    resp_list.append('Content-Length: %s' % str(bytelen))
+    resp_list.append('\r\n%s' % message)
+    resp = '\r\n'.join(resp_list)
+    return resp
 
 
 class Error404(BaseException):
