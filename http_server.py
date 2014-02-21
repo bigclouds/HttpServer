@@ -2,7 +2,7 @@ from email.utils import formatdate
 from mimetypes import guess_type
 import socket
 from os.path import isfile, isdir
-from os import listdir
+from os import listdir, getcwd
 
 
 def http_server():
@@ -93,6 +93,9 @@ def map_uri(uri):
 
     if isdir(filepath):
         contents = listdir(filepath)
+        for i in range(len(contents)):
+            if isdir('%s/webroot/%s' % (getcwd(), contents[i])):
+                contents[i] += '/'
         return ('\n'.join(contents), 'text/plain')
 
     #If what we received was not a file or a directory, raise an Error404.
