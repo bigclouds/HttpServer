@@ -7,3 +7,4 @@ python:
 script:
   - python test_http_server.py
   - python test_message_parser.py
+  - python http_server_tests.py
