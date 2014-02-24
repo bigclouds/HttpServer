@@ -99,7 +99,7 @@ def map_uri(uri):
     raise Error404("404: File not found.")
 
 
-def build_response(message, mimetype, code="OK 200"):
+def build_response(message, mimetype, code="200 OK"):
     """Build a response with the specified code and content."""
 
     # Headers should all be ascii
